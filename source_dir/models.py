@@ -66,7 +66,7 @@ def build_unet(num_classes, inference=False, class_weights=None):
         channel_softmax = channel_wise_softmax(decoded)
         label = mx.sym.Variable(name='label')
         if class_weights is None:
-            class_weights = np.ones((1, 4)).tolist()
+            class_weights = np.ones((1, num_classes)).tolist()
         else:
             class_weights = class_weights.tolist()
         class_weights = mx.sym.Variable('constant_class_weights', shape = (1, 4),
@@ -257,7 +257,7 @@ def build_enet(inp_dims, num_classes, inference=False, class_weights = None):
         channel_softmax = channel_wise_softmax(decoded)
         label = mx.sym.Variable(name='label')
         if class_weights is None:
-            class_weights = np.ones((1, 4)).tolist()
+            class_weights = np.ones((1, num_classes)).tolist()
         else:
             class_weights = class_weights.tolist()
         class_weights = mx.sym.Variable('constant_class_weights', shape = (1, 4),
