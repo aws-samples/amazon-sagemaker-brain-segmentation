@@ -59,21 +59,20 @@ def build_unet(num_classes, inference=False, class_weights=None):
     data = mx.sym.Variable(name='data')
     down_features = down_branch(data)
     decoded = up_branch(down_features, num_classes)
-    decoded = mx.sym.sigmoid(decoded, name='sigmoid')
+    channel_softmax = channel_wise_softmax(decoded)
     if inference:
-        return decoded
+        return channel_softmax
     else:
-        channel_softmax = channel_wise_softmax(decoded)
         label = mx.sym.Variable(name='label')
         if class_weights is None:
-            class_weights = np.ones((1, num_classes)).tolist()
+            class_weights = np.ones((1, num_classes )).tolist()
         else:
             class_weights = class_weights.tolist()
-        class_weights = mx.sym.Variable('constant_class_weights', shape = (1, 4),
+        class_weights = mx.sym.Variable('constant_class_weights', shape = (1, num_classes),
                                         init = MyConstant(value = class_weights))
         class_weights = mx.sym.BlockGrad(class_weights)
         loss = mx.sym.MakeLoss(avg_dice_coef_loss(label, channel_softmax, class_weights), normalization='batch')
-        mask_output = mx.sym.BlockGrad(decoded, 'mask')
+        mask_output = mx.sym.BlockGrad(channel_softmax, 'mask')
         out = mx.sym.Group([mask_output, loss])
         return out
     
@@ -250,20 +249,19 @@ def build_enet(inp_dims, num_classes, inference=False, class_weights = None):
     data = mx.sym.Variable(name='data')
     encoder = build_encoder(data, inp_dims=inp_dims)
     decoded = build_decoder(encoder, num_classes, output_shape=inp_dims)
-    decoded = mx.sym.sigmoid(decoded, name='sigmoid')
+    channel_softmax = channel_wise_softmax(decoded)
     if inference:
-        return decoded
+        return channel_softmax
     else:
-        channel_softmax = channel_wise_softmax(decoded)
         label = mx.sym.Variable(name='label')
         if class_weights is None:
             class_weights = np.ones((1, num_classes)).tolist()
         else:
             class_weights = class_weights.tolist()
-        class_weights = mx.sym.Variable('constant_class_weights', shape = (1, 4),
+        class_weights = mx.sym.Variable('constant_class_weights', shape = (1, num_classes),
                                         init = MyConstant(value = class_weights))
         class_weights = mx.sym.BlockGrad(class_weights)
         loss = mx.sym.MakeLoss(avg_dice_coef_loss(label, channel_softmax, class_weights), normalization='batch')
-        mask_output = mx.sym.BlockGrad(decoded, 'mask')
+        mask_output = mx.sym.BlockGrad(channel_softmax, 'mask')
         out = mx.sym.Group([mask_output, loss])
         return out

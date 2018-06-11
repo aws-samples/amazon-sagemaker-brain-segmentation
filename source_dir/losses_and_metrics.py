@@ -12,6 +12,7 @@ def avg_dice_coef_loss(y_true, y_pred, class_weights):
     return average
 
 def channel_wise_softmax(decoded):
+    decoded = mx.sym.broadcast_sub(decoded, mx.sym.max(decoded, axis=1, keepdims=True))
     denominator = mx.sym.sum(mx.sym.exp(decoded), axis=1, keepdims=True)
     return mx.sym.broadcast_div(mx.sym.exp(decoded), denominator)
 
