@@ -11,11 +11,6 @@ def avg_dice_coef_loss(y_true, y_pred, class_weights):
                                    mx.sym.sum(class_weights))
     return average
 
-def channel_wise_softmax(decoded):
-    decoded = mx.sym.broadcast_sub(decoded, mx.sym.max(decoded, axis=1, keepdims=True))
-    denominator = mx.sym.sum(mx.sym.exp(decoded), axis=1, keepdims=True)
-    return mx.sym.broadcast_div(mx.sym.exp(decoded), denominator)
-
 def avg_dice_coef_metric(y_true, y_pred, num_classes=4):
     intersection = np.sum(y_true*y_pred, axis=(2, 3))
     scores =  1 - (2. * intersection + 1.)/(np.sum(y_true, axis=(2, 3))+np.sum(y_pred, axis=(2, 3)) + 1.)

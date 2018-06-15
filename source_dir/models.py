@@ -1,4 +1,4 @@
-from losses_and_metrics import avg_dice_coef_loss, channel_wise_softmax
+from losses_and_metrics import avg_dice_coef_loss
 import mxnet as mx
 import mxnet.ndarray as F
 from mxnet.gluon.data import dataset
@@ -51,7 +51,7 @@ def up_branch(down_features, num_classes):
     conv6 = up_block(down_features[0], down_features[1], num_filter=256, kernel=(3,3), pad=(1,1), block=6)
     conv7 = up_block(conv6, down_features[2], num_filter=128, kernel=(3,3), pad=(1,1), block=7)
     conv8 = up_block(conv7, down_features[3], num_filter=64, kernel=(3,3), pad=(1,1), block=8)
-    conv9 = up_block(conv8, down_features[4], num_filter=64, kernel=(3,3), pad=(1,1), block=9)
+    conv9 = up_block(conv8, down_features[4], num_filter=32, kernel=(3,3), pad=(1,1), block=9)
     conv10 = mx.sym.Convolution(conv9, num_filter=num_classes, kernel=(1,1), name='conv10_1')
     return conv10
 
@@ -59,7 +59,7 @@ def build_unet(num_classes, inference=False, class_weights=None):
     data = mx.sym.Variable(name='data')
     down_features = down_branch(data)
     decoded = up_branch(down_features, num_classes)
-    channel_softmax = channel_wise_softmax(decoded)
+    channel_softmax = mx.sym.softmax(decoded, axis=1)
     if inference:
         return channel_softmax
     else:
@@ -249,7 +249,7 @@ def build_enet(inp_dims, num_classes, inference=False, class_weights = None):
     data = mx.sym.Variable(name='data')
     encoder = build_encoder(data, inp_dims=inp_dims)
     decoded = build_decoder(encoder, num_classes, output_shape=inp_dims)
-    channel_softmax = channel_wise_softmax(decoded)
+    channel_softmax = mx.sym.softmax(decoded, axis=1)
     if inference:
         return channel_softmax
     else:
