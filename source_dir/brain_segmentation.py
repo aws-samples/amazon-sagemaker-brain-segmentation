@@ -47,9 +47,9 @@ def train(current_host, channel_input_dirs, hyperparameters, hosts, num_cpus, nu
     train_iter = DataLoaderIter(train_dir, num_classes, batch_size, True, num_workers)
     validation_iter = DataLoaderIter(validation_dir, num_classes, batch_size, False, num_workers)
     if network == 'unet':
-        sym = build_unet(4, class_weights=class_weights)
+        sym = build_unet(num_classes, class_weights=class_weights)
     else:
-        sym = build_enet(inp_dims=train_iter.provide_data[0][1][1:], num_classes=4, class_weights=class_weights)
+        sym = build_enet(inp_dims=train_iter.provide_data[0][1][1:], num_classes=num_classes, class_weights=class_weights)
     print "Sym loaded"
     net = mx.mod.Module(sym, context=ctx, data_names=('data',), label_names=('label',))
     dice_metric = mx.metric.CustomMetric(feval=avg_dice_coef_metric, allow_extra_outputs=True)
@@ -64,10 +64,10 @@ def train(current_host, channel_input_dirs, hyperparameters, hosts, num_cpus, nu
         num_epoch=epochs)
     net.save_params('params')
     if network == 'unet':
-        sym = build_unet(4, inference = True)
+        sym = build_unet(num_classes, inference = True)
     else:
-        sym = build_enet(inp_dims=train_iter.provide_data[0][1][1:], num_classes=4, inference = True)
+        sym = build_enet(inp_dims=train_iter.provide_data[0][1][1:], num_classes=num_classes, inference = True)
     net = mx.mod.Module(sym, context=ctx, data_names=('data',), label_names = None)
-    net.bind(data_shapes = train_iter.provide_data)
+    net.bind(data_shapes = [('data', (1,) + train_iter.provide_data[0][1][1:])])
     net.load_params('params')
     return net
