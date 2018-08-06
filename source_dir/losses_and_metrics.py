@@ -1,5 +1,5 @@
 import mxnet as mx
-import mxnet.ndarray as F
+from mxnet import nd
 import numpy as np
 
 

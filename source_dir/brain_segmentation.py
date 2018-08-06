@@ -14,7 +14,6 @@ logging.getLogger().setLevel(logging.DEBUG)
 ###     Training Loop       ###
 ###############################
 
-
 def train(current_host, channel_input_dirs, hyperparameters, hosts, num_cpus, num_gpus):
     
     logging.info(mx.__version__)
