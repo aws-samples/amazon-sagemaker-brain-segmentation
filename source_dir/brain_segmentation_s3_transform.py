@@ -8,10 +8,9 @@ import mxnet as mx
 from mxnet import ndarray as F
 import numpy as np
 import urllib
-urllib.urlretrieve(
-    "https://raw.githubusercontent.com/drj11/pypng/master/code/png.py",
-    "png.py")
+urllib.urlretrieve ("https://s3.amazonaws.com/sagemaker-png/png.py", "png.py")
 import png
+
 
 ###############################
 ###     Hosting Code        ###
