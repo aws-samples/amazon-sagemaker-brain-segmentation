@@ -1,7 +1,6 @@
 import os
 import tarfile
 import mxnet as mx
-import mxnet.ndarray as F
 import numpy as np
 from iterator import DataLoaderIter
 from losses_and_metrics import avg_dice_coef_metric

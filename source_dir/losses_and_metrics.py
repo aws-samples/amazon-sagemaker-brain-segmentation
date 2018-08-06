@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import mxnet as mx
 from mxnet import nd
 import numpy as np
@@ -33,7 +36,7 @@ def avg_dice_coef_loss(y_true, y_pred, class_weights):
 def avg_dice_coef_metric(y_true, y_pred, num_classes=4):
     """
     Method for computing average dice coefficient metric,
-    used to create a Custom Metric.
+    
 
     Parameters
     ----------
