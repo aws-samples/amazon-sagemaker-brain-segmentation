@@ -61,11 +61,11 @@ class ImageWithMaskDataset(dataset.Dataset):
         assert 'base' in self._image_list[idx], "Couldn't find base image for: " + \
             self._image_list[idx]["mask"]
         base_filepath = os.path.join(self._root, self._image_list[idx]["base"])
-        base = mx.image.imread(base_filepath, 0).transpose((2, 0, 1)).astype(np.float32)
+        base = nd.transpose(mx.image.imread(base_filepath, 0), (2, 0, 1)).astype(np.float32)
         assert 'mask' in self._image_list[idx], "Couldn't find mask image for: " + \
             self._image_list[idx]["base"]
         mask_filepath = os.path.join(self._root, self._image_list[idx]["mask"])
-        mask = mx.image.imread(mask_filepath, 0).transpose((2, 0, 1)).astype(np.float32)
+        mask = nd.transpose(mx.image.imread(mask_filepath, 0), (2, 0, 1)).astype(np.float32)
         mask = mask.astype(np.float32)
         one_hot_mask = nd.zeros((self.num_classes,) + mask.shape[1:], dtype=np.float32)
         for c in range(self.num_classes):
