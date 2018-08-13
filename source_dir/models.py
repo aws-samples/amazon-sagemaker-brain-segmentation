@@ -4,16 +4,6 @@ from mxnet import nd
 from mxnet.gluon.data import dataset
 import numpy as np
 
-
-@mx.init.register
-class MyConstant(mx.init.Initializer):
-    def __init__(self, value):
-        super(MyConstant, self).__init__(value=value)
-        self.value = value
-
-    def _init_weight(self, _, arr):
-        arr[:] = mx.nd.array(self.value)
-
 ###############################
 ###     UNet Architecture   ###
 ###############################
@@ -72,7 +62,7 @@ def build_unet(num_classes, inference=False, class_weights=None):
             class_weights = np.ones((1, num_classes)).tolist()
         else:
             class_weights = class_weights.tolist()
-        class_weights = mx.sym.Variable('constant_class_weights', shape=(1, num_classes), init=MyConstant(value=class_weights))
+        class_weights = mx.sym.Variable('constant_class_weights', shape=(1, num_classes), init=mx.init.Constant(value=class_weights))
         class_weights = mx.sym.BlockGrad(class_weights)
         loss = mx.sym.MakeLoss(
             avg_dice_coef_loss(label, channel_softmax, class_weights),
@@ -366,8 +356,7 @@ def build_enet(inp_dims, num_classes, inference=False, class_weights=None):
             class_weights = class_weights.tolist()
         class_weights = mx.sym.Variable(
             'constant_class_weights', shape=(
-                1, num_classes), init=MyConstant(
-                value=class_weights))
+                1, num_classes), init=mx.init.Constant(value=class_weights))
         class_weights = mx.sym.BlockGrad(class_weights)
         loss = mx.sym.MakeLoss(
             avg_dice_coef_loss(
